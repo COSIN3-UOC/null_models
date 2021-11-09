@@ -41,15 +41,19 @@ def exponentialRG_proportional_proportional(M):
     cols_degr = M.sum(axis=0) 
     rows_degr = M.sum(axis=1)
     x0=np.random.uniform(0,1,size=(R+C))
+    Pij = np.zeros((R,C));
 
     solution_vector =  root(avg_degrees_expoRG, x0,args=(rows_degr,cols_degr),method='lm')
     
     print("Solver successful for lagrange multipliers?", solution_vector.success)
     print(solution_vector.message)
+    if solution_vector.success==False:
+        Pij=Pij*np.nan
+        print('Solution did not converge, returning P_ij with NAN')
+        return Pij
     x = solution_vector.x[0:R]
     y = solution_vector.x[R:R+C]
     
-    Pij = np.zeros((R,C));
     for p_index in range(len(rows_degr)):
         for a_index in range(len(cols_degr)):
             Pij[p_index,a_index] = (x[p_index]*y[a_index])/(1+x[p_index]*y[a_index])
